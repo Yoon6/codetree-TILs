@@ -21,6 +21,7 @@ public class Main {
     static int[][] attackCount = null;
     static boolean[][] visited = null;
     static int[][][] route = null;
+    static int activeCount = 0;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -41,28 +42,17 @@ public class Main {
                 visited[i][j] = false;
                 route[i][j][0] = -1;
                 route[i][j][1] = -1;
+                if (table[i][j] > 0) {
+                    activeCount++;
+                }
             }
         }
 
         while (k-- > 0) {
             Point attacker = findAttacker();
             Point target = findTarget(attacker);
-            /*
-            System.out.println("========");
-            System.out.printf("attacker = (%d, %d)\n", attacker.x, attacker.y);
-            System.out.printf("target = (%d, %d)\n", target.x, target.y);
-            System.out.println("========");
-            */
 
             findRazerRoute(attacker, target);
-            /*
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    System.out.printf("(%d, %d)\t", route[i][j][0], route[i][j][1]);
-                }
-                System.out.println();
-            }
-            */
 
             if (route[target.x][target.y][0] != -1) {
                 attackByRazer(attacker, target);
@@ -70,25 +60,11 @@ public class Main {
                 attackByBomb(attacker, target);
             }
 
-/*
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    System.out.printf("%d\t", table[i][j]);
-                }
-                System.out.println();
-            }
-            */
             repair();
+            if (activeCount <= 1) {
+                break;
+            }
             resetRoute();
-            
-            /*
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < m; j++) {
-                    System.out.printf("%d\t", table[i][j]);
-                }
-                System.out.println();
-            }*/
-            
         }
         int max = -1;
         for (int i = 0; i < n; i++) {
@@ -234,62 +210,6 @@ public class Main {
                     route[nx][ny][1] = y;
                 }
             }
-
-            /*
-            nx = x;
-            ny = y + 1;
-            if (ny < m && table[nx][ny] > 0 && route[nx][ny][0] == -1) {
-                q.add(new int[]{nx, ny});
-                route[nx][ny][0] = x;
-                route[nx][ny][1] = y;
-
-            } else if(ny >= m && table[nx][0] > 0 && route[nx][0][0] == -1) {
-                
-                q.add(new int[]{nx, 0});
-                route[nx][0][0] = x;
-                route[nx][0][1] = y;
-            }
-
-            nx = x + 1;
-            ny = y;
-            if (nx < n && table[nx][ny] > 0 && route[nx][ny][0] == -1) {
-                q.add(new int[]{nx, ny});
-                route[nx][ny][0] = x;
-                route[nx][ny][1] = y;
-
-            } else if (nx >= n && table[0][ny] > 0 && route[0][ny][0] == -1) {
-                q.add(new int[]{0, ny});
-                route[0][ny][0] = x;
-                route[0][ny][1] = y;
-            }
-
-            
-            nx = x;
-            ny = y - 1;
-
-            if (ny >= 0 && table[nx][ny] > 0 && route[nx][ny][0] == -1) {
-                q.add(new int[]{nx, ny});
-                route[nx][ny][0] = x;
-                route[nx][ny][1] = y;
-            } else if(ny < 0 && table[nx][m -1] > 0 && route[nx][m-1][0] == -1) {
-                q.add(new int[]{nx, m - 1});
-                route[nx][m-1][0] = x;
-                route[nx][m-1][1] = y;
-            }
-            
-            nx = x - 1;
-            ny = y;
-
-            if (nx >= 0 && table[nx][ny] > 0 && route[nx][ny][0] == -1) {
-                q.add(new int[]{nx, ny});
-                route[nx][ny][0] = x;
-                route[nx][ny][1] = y;
-            } else if (nx < 0 && table[n - 1][ny] > 0 && route[n-1][ny][0] == -1) {
-                q.add(new int[]{n - 1, ny});
-                route[n-1][ny][0] = x;
-                route[n-1][ny][1] = y;
-            }
-            */
         }
     }
 
@@ -355,7 +275,6 @@ public class Main {
         for (int i = 0; i < 8; i++) {
             int x = attackRange[i][0];
             int y = attackRange[i][1];
-
             if (table[x][y] <= 0) continue; 
             visited[x][y] = true;
             if (x == attacker.x && y == attacker.y) continue;
@@ -364,11 +283,16 @@ public class Main {
     }
 
     public static void repair() {
+        activeCount = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 if (table[i][j] > 0 && !visited[i][j]) {
                     table[i][j] += 1;
                 }
+                if (table[i][j] > 0) {
+                    activeCount++;
+                }
+
             }
         }
     }
