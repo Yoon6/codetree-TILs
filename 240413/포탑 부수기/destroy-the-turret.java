@@ -48,15 +48,45 @@ public class Main {
             Point attacker = findAttacker();
             Point target = findTarget();
 
+/*
+            System.out.println("========");
+            System.out.printf("attacker = (%d, %d)\n", attacker.x, attacker.y);
+            System.out.printf("target = (%d, %d)\n", target.x, target.y);
+*/
             findRazerRoute(attacker, target);
-            
+            /*
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    System.out.printf("(%d, %d)\t", route[i][j][0], route[i][j][1]);
+                }
+                System.out.println();
+            }
+            */
+
             if (route[target.x][target.y][0] != -1) {
                 attackByRazer(attacker, target);
             } else {
                 attackByBomb(attacker, target);
             }
+
+/*
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    System.out.printf("%d\t", table[i][j]);
+                }
+                System.out.println();
+            }
+            */
             repair();
             resetRoute();
+            /*
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < m; j++) {
+                    System.out.printf("%d\t", table[i][j]);
+                }
+                System.out.println();
+            }
+            */
         }
 
         Point target = findTarget();
@@ -84,8 +114,12 @@ public class Main {
                 if (table[i][j] > min) continue;
                 if (table[i][j] == min) {
                     if (attackCount[i][j] < count) continue;
-                    if (i + j < x + y) continue;
-                    if (j <= y) continue;
+                    if (attackCount[i][j] == count) {
+                        if (i + j < x + y) continue;
+                        if (i + j == x + y) {
+                            if (j <= y) continue;
+                        }
+                    }                    
                 }
 
                 min = table[i][j];
@@ -112,8 +146,12 @@ public class Main {
                 if (table[i][j] < max) continue;
                 if (table[i][j] == max) {
                     if (attackCount[i][j] > count) continue;
-                    if (i + j > x + y) continue;
-                    if (j > y) continue;
+                    if (attackCount[i][j] == count) {
+                        if (i + j > x + y) continue;
+                        if (i + j == x + y) {
+                            if (j > y) continue;
+                        }
+                    }
                 }
 
                 max = table[i][j];
@@ -204,22 +242,21 @@ public class Main {
         int attack = table[attacker.x][attacker.y];
         int x = target.x;
         int y = target.y;
-        table[x][y] -= attack;
-        visited[x][y] = true;
-        visited[attacker.x][attacker.y] = true;
 
-        attack /= 2;
-
-        x = route[x][y][0];
-        y = route[x][y][1];
-        while (x != -2) {
-            table[x][y] -= attack;
+        while (true) {
             visited[x][y] = true;
-            int[] tmp = route[x][y];
-            x = tmp[0];
-            y = tmp[1];
+
+            if (x == attacker.x && y == attacker.y) break;
+            if (x == target.x && y == target.y) {
+                table[x][y] -= attack;
+            } else {
+                table[x][y] -= (attack / 2);
+            }
+
+            int[] temp = route[x][y];
+            x = temp[0];
+            y = temp[1];
         }
-        
     }
 
     public static int[][] get8Direction(int x, int y) {
@@ -255,11 +292,15 @@ public class Main {
     public static void attackByBomb(Point attacker, Point target) {
         int[][] attackRange = get8Direction(target.x, target.y);
         int attack = table[attacker.x][attacker.y];
+        visited[attacker.x][attacker.y] = true;
+        visited[target.x][target.y] = true;
 
         for (int i = 0; i < 8; i++) {
             int x = attackRange[i][0];
             int y = attackRange[i][1];
+
             if (table[x][y] <= 0) continue; 
+            visited[x][y] = true;
             if (x == attacker.x && y == attacker.y) continue;
             if (x == target.x && y == target.y) {
                 table[x][y] -= attack;
