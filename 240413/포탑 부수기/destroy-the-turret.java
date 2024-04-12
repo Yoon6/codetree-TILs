@@ -47,12 +47,13 @@ public class Main {
         while (k-- > 0) {
             Point attacker = findAttacker();
             Point target = findTarget(attacker);
-
-/*
+            /*
             System.out.println("========");
             System.out.printf("attacker = (%d, %d)\n", attacker.x, attacker.y);
             System.out.printf("target = (%d, %d)\n", target.x, target.y);
-*/
+            System.out.println("========");
+            */
+
             findRazerRoute(attacker, target);
             /*
             for (int i = 0; i < n; i++) {
@@ -79,6 +80,7 @@ public class Main {
             */
             repair();
             resetRoute();
+            
             /*
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < m; j++) {
@@ -301,6 +303,7 @@ public class Main {
         int attack = table[attacker.x][attacker.y];
         visited[attacker.x][attacker.y] = true;
         visited[target.x][target.y] = true;
+        table[target.x][target.y] -= attack;
 
         for (int i = 0; i < 8; i++) {
             int x = attackRange[i][0];
@@ -309,11 +312,7 @@ public class Main {
             if (table[x][y] <= 0) continue; 
             visited[x][y] = true;
             if (x == attacker.x && y == attacker.y) continue;
-            if (x == target.x && y == target.y) {
-                table[x][y] -= attack;
-            } else {
-                table[x][y] -= (attack/2);
-            }
+            table[x][y] -= (attack/2); 
         }
     }
 
