@@ -87,8 +87,8 @@ public class Main {
                     System.out.printf("%d\t", table[i][j]);
                 }
                 System.out.println();
-            }
-            */
+            }*/
+            
         }
         int max = -1;
         for (int i = 0; i < n; i++) {
@@ -173,6 +173,33 @@ public class Main {
         return new Point(x, y);
     }
 
+    public static int[][] get4Direction(int x, int y) {
+        int[][] result = new int[4][2];
+
+        int[][] offset = {
+            {0, 1},
+            {1, 0},
+            {0, -1},
+            {-1, 0}
+        };
+
+        for (int i = 0; i < offset.length; i++) {
+            int nx = x + offset[i][0];
+            int ny = y + offset[i][1];
+
+            if (nx >= n) nx = 0;
+            if (nx < 0) nx = n - 1;
+            if (ny >= m) ny = 0;
+            if (ny < 0) ny = m - 1;
+
+            result[i][0] = nx;
+            result[i][1] = ny;
+        }
+
+        return result;
+    }
+
+
     public static void findRazerRoute(Point attacker, Point target) {
         Queue<int[]> q = new LinkedList<>();
 
@@ -184,13 +211,31 @@ public class Main {
             int[] cur = q.remove();
             int x = cur[0];
             int y = cur[1];
-            int nx = x;
-            int ny = y;
 
             if (x == target.x && y == target.y) {
                 break;
             }
 
+            int[][] offset = {
+                {0, 1},
+                {1, 0},
+                {0, -1},
+                {-1, 0}
+            };
+
+            int[][] range = getDirection(x, y, offset);
+
+            for (int i = 0; i < range.length; i++) {
+                int nx = range[i][0];
+                int ny = range[i][1];
+                if (table[nx][ny] > 0 && route[nx][ny][0] == -1) {
+                    q.add(new int[]{nx, ny});
+                    route[nx][ny][0] = x;
+                    route[nx][ny][1] = y;
+                }
+            }
+
+            /*
             nx = x;
             ny = y + 1;
             if (ny < m && table[nx][ny] > 0 && route[nx][ny][0] == -1) {
@@ -244,6 +289,7 @@ public class Main {
                 route[n-1][ny][0] = x;
                 route[n-1][ny][1] = y;
             }
+            */
         }
     }
 
@@ -268,19 +314,8 @@ public class Main {
         }
     }
 
-    public static int[][] get8Direction(int x, int y) {
-        int[][] result = new int[8][2];
-
-        int[][] offset = {
-            {1, 0},
-            {1, 1},
-            {0, 1},
-            {1, -1},
-            {-1, 0},
-            {-1, -1},
-            {0, -1},
-            {-1, 1}
-        };
+    public static int[][] getDirection(int x, int y, int[][] offset) {
+        int[][] result = new int[offset.length][2];
 
         for (int i = 0; i < offset.length; i++) {
             int nx = x + offset[i][0];
@@ -299,7 +334,19 @@ public class Main {
     }
 
     public static void attackByBomb(Point attacker, Point target) {
-        int[][] attackRange = get8Direction(target.x, target.y);
+        int[][] offset = {
+            {1, 0},
+            {1, 1},
+            {0, 1},
+            {1, -1},
+            {-1, 0},
+            {-1, -1},
+            {0, -1},
+            {-1, 1}
+        };
+
+
+        int[][] attackRange = getDirection(target.x, target.y, offset);
         int attack = table[attacker.x][attacker.y];
         visited[attacker.x][attacker.y] = true;
         visited[target.x][target.y] = true;
