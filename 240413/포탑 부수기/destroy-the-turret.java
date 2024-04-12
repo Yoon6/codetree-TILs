@@ -46,7 +46,7 @@ public class Main {
 
         while (k-- > 0) {
             Point attacker = findAttacker();
-            Point target = findTarget();
+            Point target = findTarget(attacker);
 
 /*
             System.out.println("========");
@@ -88,9 +88,15 @@ public class Main {
             }
             */
         }
-
-        Point target = findTarget();
-        System.out.println(table[target.x][target.y]);
+        int max = -1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (table[i][j] > max) {
+                    max = table[i][j];                    
+                }
+            }
+        }
+        System.out.println(max);
     }
 
     public static void resetRoute() {
@@ -135,13 +141,14 @@ public class Main {
         return new Point(x, y);
     }
 
-    public static Point findTarget() {
+    public static Point findTarget(Point attacker) {
         int x = n;
         int y = m;
         int max = -1;
         int count = round;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
+                if (i == attacker.x && j == attacker.y) continue;
                 if (table[i][j] <= 0) continue;
                 if (table[i][j] < max) continue;
                 if (table[i][j] == max) {
