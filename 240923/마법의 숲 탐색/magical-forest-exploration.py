@@ -110,7 +110,6 @@ def get_score(order, table, r, c):
                     visited.add((nx, ny))
                     queue.append((nx, ny))
 
-    print(final_row)
     return final_row
 
 # 1-1. 골렘 이동
@@ -149,6 +148,4 @@ for i in range(2, K+1):
         r, c = move(i, method, r, c)
         method = get_movable_method(table, r, c)
 
-for t in table:
-    print(t)
 print(score)
