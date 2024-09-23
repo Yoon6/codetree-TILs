@@ -13,6 +13,7 @@ for i in range(C + 1):
 
 cols = [-1]
 directs = [-1]
+golems = [[0,0]]
 for i in range(K):
     ci, di = map(int, input().split())
     cols.append(ci)
@@ -88,7 +89,7 @@ def move(order, method, r, c):
 
     return r, c
 
-def get_score(order, table, r, c):
+def get_score(table, r, c):
     dx = [-1, 1, 0, 0]
     dy = [0, 0, -1, 1]
 
@@ -101,14 +102,22 @@ def get_score(order, table, r, c):
         if x >= final_row:
             final_row = x
 
+        cur = table[x][y]
+        d = directs[cur]
+
         for i in range(4):
             nx = x + dx[i]
             ny = y + dy[i]
 
             if 1 <= nx <= R and 1 <= ny <= C:
-                if (nx, ny) not in visited and table[nx][ny] == order:
-                    visited.add((nx, ny))
-                    queue.append((nx, ny))
+                if (nx, ny) not in visited:
+                    if golems[cur][0]+direction[d][0] == x and golems[cur][1]+direction[d][1] == y:
+                        if table[nx][ny] != 0:
+                            visited.add((nx, ny))
+                            queue.append((nx, ny))
+                    elif table[nx][ny] == cur:
+                        visited.add((nx, ny))
+                        queue.append((nx, ny))
 
     return final_row
 
@@ -119,6 +128,8 @@ def get_score(order, table, r, c):
 
 # 골렘 이동 후 정령 위치
 fairy = [R - 1, cols[1]]
+golems.append([fairy[0],fairy[1]])
+
 # 골렘 위치 마킹
 table[fairy[0]][fairy[1]] = 1
 for i in range(4):
@@ -133,6 +144,7 @@ for i in range(2, K+1):
     method = get_movable_method(table, r, c)
     while True:
         if method == -1:
+            golems.append([r, c])
             if r < 2:
                 table = [[0] * (C + 1) for i in range(R + 1)]
                 for i in range(R + 1):
@@ -143,7 +155,7 @@ for i in range(2, K+1):
                 table[r][c] = i
                 for j in range(4):
                     table[r + direction[j][0]][c + direction[j][1]] = i
-                score += get_score(i, table, r, c)
+                score += get_score(table, r, c)
             break
         r, c = move(i, method, r, c)
         method = get_movable_method(table, r, c)
