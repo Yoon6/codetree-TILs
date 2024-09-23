@@ -127,19 +127,19 @@ def get_score(table, r, c):
 #   - DFS
 
 # 골렘 이동 후 정령 위치
-fairy = [R - 1, cols[1]]
-golems.append([fairy[0],fairy[1]])
+# fairy = [R - 1, cols[1]]
+# golems.append([fairy[0],fairy[1]])
 
-# 골렘 위치 마킹
-table[fairy[0]][fairy[1]] = 1
-for i in range(4):
-    table[fairy[0] + direction[i][0]][fairy[1] + direction[i][1]] = 1
-# 정렬 이동
-fairy[0] = R
-# 점수 합산
-score += fairy[0]
+# # 골렘 위치 마킹
+# table[fairy[0]][fairy[1]] = 1
+# for i in range(4):
+#     table[fairy[0] + direction[i][0]][fairy[1] + direction[i][1]] = 1
+# # 정렬 이동
+# fairy[0] = R
+# # 점수 합산
+# score += fairy[0]
 
-for i in range(2, K+1):
+for i in range(1, K+1):
     r, c = -1, cols[i]
     method = get_movable_method(table, r, c)
     while True:
