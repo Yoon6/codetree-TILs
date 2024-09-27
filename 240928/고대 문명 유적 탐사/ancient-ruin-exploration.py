@@ -56,10 +56,21 @@ def calculate(r, c):
 def rotate(maps2, r, c):
     rotated_map = copy.deepcopy(maps2)
 
-    sub_matrix = [row[c-1:c+2] for row in maps2[r-1:r+2]]
-    rotated_sub_matrix = list(zip(*sub_matrix[::-1]))
+    sub_matrix = [[0]*3 for _ in range(3)]
+    for i in range(r-1, r+2):
+        for j in range(c-1, c+2):
+            sub_matrix[i-r+1][j-c+1] = rotated_map[i][j]
+
+    rotated_sub_matrix = [[0] * 3 for _ in range(3)]
+
     for i in range(3):
-        rotated_map[r-1 + i][c-1:c+2] = rotated_sub_matrix[i]
+        for j in range(3):
+            rotated_sub_matrix[i][j] = sub_matrix[3-j-1][i]
+
+
+    for i in range(r-1, r+2):
+        for j in range(c-1, c+2):
+            rotated_map[i][j] = rotated_sub_matrix[i-r+1][j-c+1]
 
     return rotated_map
 
@@ -151,10 +162,10 @@ def explore():
         maps = rotate(maps, opt_r, opt_c)
     elif opt_a == 180:
         maps = rotate(maps, opt_r, opt_c)
-        maps = rotate(maps, opt_r, opt_a)
+        maps = rotate(maps, opt_r, opt_c)
     elif opt_a == 270:
         maps = rotate(maps, opt_r, opt_c)
-        maps = rotate(maps, opt_r, opt_a)
+        maps = rotate(maps, opt_r, opt_c)
         maps = rotate(maps, opt_r, opt_c)
     sum_score = 0
 
