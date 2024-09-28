@@ -146,7 +146,7 @@ def move_santa(turn, santa):
     if santa.is_over or santa.stun == turn or santa.stun == turn-1:
         return
 
-    min_distance = 9999
+    min_distance = get_distance(santa.x, santa.y, ru_x, ru_y)
     direction = -1
     for i in range(0, 8, 2):
         nx, ny = santa.x + dx[i], santa.y + dy[i]
@@ -219,12 +219,12 @@ def main():
     santas.sort(key=lambda santa: santa.idx)
 
     game_over = False
-    #print_table()
+    print_table()
     for i in range(M):
         if game_over:
             break
         game_over = start_turn(i)
-        #print_table()
+        print_table()
 
 
     print_result()
