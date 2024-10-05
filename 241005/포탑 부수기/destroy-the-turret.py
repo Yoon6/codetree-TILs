@@ -1,6 +1,7 @@
 from collections import deque
 
 N, M, K = 0,0,0
+count = 0
 maps = []
 times = []
 routes = []
@@ -8,11 +9,11 @@ routes = []
 effected_sets = set()
 
 def find_attacker():
-    mx, my = 0, 0
-    max_time = 0
+    mx, my = -1, -1
+    max_time = -1
     minimum = 9999
     for x in range(N):
-        for y in range(N):
+        for y in range(M):
             if maps[x][y] <= 0:
                 continue
             if maps[x][y] < minimum:
@@ -34,11 +35,11 @@ def find_attacker():
     return mx, my
 
 def find_target(from_x, from_y):
-    mx, my = 0, 0
+    mx, my = -1, -1
     min_time = 9999
     maximum = 0
     for x in range(N):
-        for y in range(N):
+        for y in range(M):
             if maps[x][y] <= 0:
                 continue
             if x == from_x and y == from_y:
@@ -102,10 +103,13 @@ def can_use_laser(from_x, from_y, to_x, to_y):
     return False
 
 def attack_by_laser(from_x, from_y, to_x, to_y):
+    global count
     power = maps[from_x][from_y]
 
     maps[to_x][to_y] -= power
     effected_sets.add((to_x, to_y))
+    if maps[to_x][to_y] <= 0:
+        count -= 1
 
     x, y = routes[to_x][to_y][0], routes[to_x][to_y][1]
 
@@ -114,15 +118,22 @@ def attack_by_laser(from_x, from_y, to_x, to_y):
             break
 
         maps[x][y] -= int(power/2)
+        if maps[x][y] <= 0:
+            count -= 1
+
         effected_sets.add((x, y))
         x, y = routes[x][y][0], routes[x][y][1]
 
 def attack_by_bomb(from_x, from_y, to_x, to_y):
+    global count
     dx = [-1, -1, 0, 1, 1, 1, 0, -1]
     dy = [0, 1, 1, 1, 0, -1, -1, -1]
     power = maps[from_x][from_y]
     maps[to_x][to_y] -= power
     effected_sets.add((to_x, to_y))
+
+    if maps[to_x][to_y] <= 0:
+        count -= 1
 
     for i in range(8):
         nx, ny = to_x+dx[i], to_y+dy[i]
@@ -134,6 +145,8 @@ def attack_by_bomb(from_x, from_y, to_x, to_y):
             continue
 
         maps[nnx][nny] -= int(power/2)
+        if maps[nnx][nny] <= 0:
+            count -= 1
         effected_sets.add((nnx, nny))
 
 def reload(from_x, from_y):
@@ -158,7 +171,7 @@ def print_result():
     print(result)
 
 def main():
-    global N, M, K, maps, times
+    global N, M, K, maps, times, count
     N, M, K = map(int, input().split())
     maps = [[0]*M for _ in range(N)]
     times = [[0]*M for _ in range(N)]
@@ -166,7 +179,13 @@ def main():
     for i in range(N):
         maps[i] = list(map(int, input().split()))
 
-    for i in range(K):
+    for i in range(N):
+        for j in range(M):
+            if maps[i][j] > 0:
+                count+=1
+
+    for i in range(K): # i == 27
+
         from_x, from_y = find_attacker()
         to_x, to_y = find_target(from_x, from_y)
         if can_use_laser(from_x, from_y, to_x, to_y):
@@ -175,6 +194,9 @@ def main():
             attack_by_bomb(from_x, from_y, to_x, to_y)
         reload(from_x, from_y)
         times[from_x][from_y] = i+1
+
+        if count <= 1:
+            break
 
     print_result()
 
