@@ -82,8 +82,9 @@ def get_square_range():
         elif length == min_length:
             if x1 < mx1:
                 mx1, my1, mx2, my2 = x1, y1, x2, y2
-            elif y1 < my1:
-                mx1, my1, mx2, my2 = x1, y1, x2, y2
+            elif x1 == mx1:
+                if y1 < my1:
+                    mx1, my1, mx2, my2 = x1, y1, x2, y2
 
     return mx1, my1, mx2, my2
 
@@ -177,8 +178,8 @@ def move():
         x, y = find_next_pos(players[i])
         if players[i].x != x or players[i].y != y:
             players[i].move_count += 1
-        players[i].x = x
-        players[i].y = y
+            players[i].x = x
+            players[i].y = y
         if x == exit_x and y == exit_y:
             players[i].is_exit = True
 
@@ -208,7 +209,7 @@ def main():
     exit_y -= 1
     miro[exit_x][exit_y] = -1
 
-    for i in range(K):
+    for i in range(K): # i == 5
         if is_all_exited():
             break
         move()
