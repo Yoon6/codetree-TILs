@@ -52,7 +52,7 @@ def make_smallest_square(x1, y1, x2, y2, length):
             my += (length - i)
             break
 
-    return x, y, mx, my
+    return min(x, mx), min(y, my), max(x, mx), max(y, my)
 
 def get_square_range():
     mx1, my1, mx2, my2 = N,N,0,0
@@ -81,7 +81,22 @@ def get_square_range():
 
     return mx1, my1, mx2, my2
 
+
+def get_players_in_range(x1, y1, x2, y2):
+    players_in_range = []
+    
+    for i in range(len(players)):
+        if players[i].is_exit:
+            continue
+        if x1 <= players[i].x <= x2 and y1 <= players[i].y <= y2:
+            players_in_range.append(players[i])
+            
+            
+    return players_in_range
+
+
 def rotate_90_clock_wise(x1, y1, x2, y2):
+    global exit_x, exit_y
     n = abs(x1-x2)+1
     copy_miro = [[0]*n for _ in range(n)]
 
@@ -93,10 +108,19 @@ def rotate_90_clock_wise(x1, y1, x2, y2):
             j+=1
         i+=1
 
+    players_in_range = get_players_in_range(x1, y1, x2, y2)
+    is_used = [False]*len(players_in_range)
     sub_copy_miro = copy.deepcopy(copy_miro)
     for x in range(n):
         for y in range(n):
             copy_miro[x][y] = sub_copy_miro[n-y-1][x]
+            for i in range(len(players_in_range)):
+                if is_used[i]:
+                    continue
+                px, py = players_in_range[i].x, players_in_range[i].y
+                if px-x1 == n-y-1 and py-y1 == x:
+                    players_in_range[i].x, players_in_range[i].y = x + x1, y + y1
+                    is_used[i] = True
 
     i, j = 0, 0
     for x in range(x1, x2+1):
@@ -106,6 +130,12 @@ def rotate_90_clock_wise(x1, y1, x2, y2):
             j+=1
         i+=1
     # exit_x, exit_y 변경 필요.
+
+    for x in range(x1, x2+1):
+        for y in range(y1, y2+1):
+            if miro[x][y] == -1:
+                exit_x = x
+                exit_y = y
 
 
 def damage_to_wall(x1, y1, x2, y2):
@@ -167,6 +197,9 @@ def main():
         players.append(Player(x-1, y-1))
 
     exit_x, exit_y = map(int, input().split())
+    exit_x -= 1
+    exit_y -= 1
+    miro[exit_x][exit_y] = -1
 
     for i in range(K):
         if is_all_exited():
