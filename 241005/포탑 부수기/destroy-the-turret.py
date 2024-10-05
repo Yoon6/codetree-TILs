@@ -33,13 +33,15 @@ def find_attacker():
     maps[mx][my] += (N+M)
     return mx, my
 
-def find_target():
+def find_target(from_x, from_y):
     mx, my = 0, 0
     min_time = 9999
     maximum = 0
     for x in range(N):
         for y in range(N):
             if maps[x][y] <= 0:
+                continue
+            if x == from_x and y == from_y:
                 continue
             if maps[x][y] > maximum:
                 maximum = maps[x][y]
@@ -166,7 +168,7 @@ def main():
 
     for i in range(K):
         from_x, from_y = find_attacker()
-        to_x, to_y = find_target()
+        to_x, to_y = find_target(from_x, from_y)
         if can_use_laser(from_x, from_y, to_x, to_y):
             attack_by_laser(from_x, from_y, to_x, to_y)
         else:
