@@ -34,8 +34,10 @@ def get_reversed_direction(direction):
 
 def move_from_to(player, to_x, to_y):
     from_x, from_y = player.x, player.y
-    p_map[to_x][to_y] = p_map[from_x][from_y]
-    p_map[from_x][from_y] = 0
+    p_map[to_x][to_y] = player.idx
+
+    if p_map[from_x][from_y] == player.idx:
+        p_map[from_x][from_y] = 0
 
     player.x, player.y = to_x, to_y
 
@@ -86,22 +88,22 @@ def get_next_direction(direction):
         return 0
     return direction + 1
 
-def move_loser(player, x, y):
-    to_x, to_y = x + dx[player.direction], y + dy[player.direction]
+def move_loser(winner, loser, x, y):
+    to_x, to_y = x + dx[loser.direction], y + dy[loser.direction]
     while True:
         if not is_valid(to_x, to_y):
-            direction = get_next_direction(player.direction)
+            direction = get_next_direction(loser.direction)
             to_x, to_y = x + dx[direction], y + dy[direction]
-            player.direction = direction
+            loser.direction = direction
 
-        if p_map[to_x][to_y] == 0:
+        if p_map[to_x][to_y] == 0 or p_map[to_x][to_y] == winner.idx:
             break
-        direction = get_next_direction(player.direction)
+        direction = get_next_direction(loser.direction)
         to_x, to_y = x + dx[direction], y + dy[direction]
-        player.direction = direction
+        loser.direction = direction
 
-    move_from_to(player, to_x, to_y)
-    exchange_gun(player)
+    move_from_to(loser, to_x, to_y)
+    exchange_gun(loser)
 
 def move(player, to_x, to_y):
     if p_map[to_x][to_y] != 0:
@@ -114,24 +116,24 @@ def move(player, to_x, to_y):
         # player는 아직 to_x, to_y 로 옮기지 않음(코드상)
         if player_power < enemy_power: # winner = enemy
             drop_gun(player, to_x, to_y)
-            move_loser(player, to_x, to_y)
+            move_loser(enemy, player, to_x, to_y)
             exchange_gun(enemy)
             enemy.point += diff
         elif player_power > enemy_power: # winner = player
             drop_gun(enemy, to_x, to_y)
-            move_loser(enemy, to_x, to_y)
+            move_loser(player, enemy, to_x, to_y)
             move_from_to(player, to_x, to_y)
             exchange_gun(player)
             player.point += diff
         else:
             if player.stat < enemy.stat: # winner = enemy
                 drop_gun(player, to_x, to_y)
-                move_loser(player, to_x, to_y)
+                move_loser(enemy, player, to_x, to_y)
                 exchange_gun(enemy)
                 enemy.point += diff
             else: # winner = player
                 drop_gun(enemy, to_x, to_y)
-                move_loser(enemy, to_x, to_y)
+                move_loser(player, enemy, to_x, to_y)
                 move_from_to(player, to_x, to_y)
                 exchange_gun(player)
                 player.point += diff
