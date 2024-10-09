@@ -44,9 +44,9 @@ def is_all_finished():
     return all_finished
 
 def move_to_store(player):
-    mx, my = player.x, player.y
+    mx, my = 0,0
     tx, ty = player.get_target_pos()
-    m_distance = get_distance(mx, my, tx, ty)
+    m_distance = 999
     for i in range(4):
         nx, ny = player.x + dx[i], player.y + dy[i]
         if is_valid(nx, ny) and can_placing(nx, ny):
