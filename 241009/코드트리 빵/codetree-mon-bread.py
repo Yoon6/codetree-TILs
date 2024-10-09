@@ -116,30 +116,29 @@ def init(player):
     q = deque()
     q.append((tx, ty))
     visited = set((tx, ty))
+    dis = [[-1] * n for _ in range(n)]
+    dis[tx][ty] = 0
 
     while q:
         x, y = q.popleft()
-
-        if maps[x][y] == 1:
-            player.x, player.y = x, y
-            player.state = State.PLAYING
-            maps[x][y] = -1
-            break
 
         for i in range(4):
             nx, ny = x + dx[i], y + dy[i]
             if (nx, ny) not in visited and is_valid(nx, ny) and maps[nx][ny] != -1:
                 q.append((nx, ny))
                 visited.add((nx, ny))
+                dis[nx][ny] = dis[x][y] + 1
 
-    """
+
+
     mx, my = 0, 0
     m_distance = 999
     for x in range(n):
         for y in range(n):
             if maps[x][y] != 1:
                 continue
-            distance = get_distance(x, y, tx, ty)
+            distance = dis[x][y]
+
             if distance < m_distance:
                 m_distance = distance
                 mx, my = x, y
@@ -152,8 +151,7 @@ def init(player):
 
     player.x, player.y = mx, my
     player.state = State.PLAYING
-    maps[mx][my] = 0
-    """
+    maps[mx][my] = -1
 
 def move(time):
     for i in range(m):
