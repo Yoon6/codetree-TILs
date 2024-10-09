@@ -36,7 +36,7 @@ def is_valid(x, y):
     return 0 <= x < n and 0 <= y < n
 
 
-def can_placing(x, y):
+def can_placing(player, x, y):
     return maps[x][y] != -1
 
 
@@ -60,7 +60,7 @@ def move_to_store(player):
     visited = set([(px, py)])
     routes = [[0]*n for _ in range(n)]
 
-    routes[px][py] = (-1, 1)
+    routes[px][py] = (-1, -1)
 
     while q:
         x, y = q.popleft()
@@ -115,7 +115,7 @@ def init(player):
 
     q = deque()
     q.append((tx, ty))
-    visited = set((tx, ty))
+    visited = set([(tx, ty)])
     dis = [[-1] * n for _ in range(n)]
     dis[tx][ty] = 0
 
@@ -138,7 +138,8 @@ def init(player):
             if maps[x][y] != 1:
                 continue
             distance = dis[x][y]
-
+            if distance == -1:
+                continue
             if distance < m_distance:
                 m_distance = distance
                 mx, my = x, y
