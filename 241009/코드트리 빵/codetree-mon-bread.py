@@ -88,7 +88,6 @@ def move_to_store(player):
     player.x, player.y = x, y
     if x == tx and y == ty:
         player.state = State.FINISHED
-        maps[x][y] = -1
 
 
     """
@@ -152,14 +151,26 @@ def init(player):
 
     player.x, player.y = mx, my
     player.state = State.PLAYING
-    maps[mx][my] = -1
+
 
 def move(time):
+    if time <= m:
+        init(players[time-1])
+
     for i in range(m):
+        if i == time - 1:
+            continue
         if players[i].state == State.PLAYING:
             move_to_store(players[i])
-        if time - 1 == i:
-            init(players[i])
+
+    for i in range(m):
+        tx, ty = players[i].get_target_pos()
+        if players[i].x == tx and players[i].y == ty:
+            maps[tx][ty] = -1
+
+    if time <= m:
+        x, y = players[time-1].x, players[time-1].y
+        maps[x][y] = -1
 
 
 def main():
