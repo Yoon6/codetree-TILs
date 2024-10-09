@@ -30,6 +30,9 @@ def get_distance(x1, y1, x2, y2):
 def is_valid(x, y):
     return 0 <= x < n and 0 <= y < n
 
+def can_placing(x, y):
+    return maps[x][y] != -1
+
 def is_all_finished():
     all_finished = True
 
@@ -46,7 +49,7 @@ def move_to_store(player):
     m_distance = get_distance(mx, my, tx, ty)
     for i in range(4):
         nx, ny = player.x + dx[i], player.y + dy[i]
-        if is_valid(nx, ny):
+        if is_valid(nx, ny) and can_placing(nx, ny):
             distance = get_distance(nx, ny, tx, ty)
             if distance < m_distance:
                 m_distance = distance
@@ -55,6 +58,7 @@ def move_to_store(player):
     player.x, player.y = mx, my
     if mx == tx and my == ty:
         player.state = State.FINISHED
+        maps[tx][ty] = -1
 
 def init(player):
     tx, ty = player.get_target_pos()
