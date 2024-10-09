@@ -77,7 +77,7 @@ def init(player):
                     mx, my = x, y
                 elif x == mx:
                     if y < my:
-                        my, mx = x, y
+                        mx, my = x, y
 
     player.x, player.y = mx, my
     player.state = State.PLAYING
