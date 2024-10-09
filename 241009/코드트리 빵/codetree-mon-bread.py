@@ -154,8 +154,6 @@ def init(player):
 
 
 def move(time):
-    if time <= m:
-        init(players[time-1])
 
     for i in range(m):
         if i == time - 1:
@@ -169,6 +167,7 @@ def move(time):
             maps[tx][ty] = -1
 
     if time <= m:
+        init(players[time-1])
         x, y = players[time-1].x, players[time-1].y
         maps[x][y] = -1
 
