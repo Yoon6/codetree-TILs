@@ -123,7 +123,7 @@ def init(player):
         if maps[x][y] == 1:
             player.x, player.y = x, y
             player.state = State.PLAYING
-            maps[x][y] = 0
+            maps[x][y] = -1
             break
 
         for i in range(4):
