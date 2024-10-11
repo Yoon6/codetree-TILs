@@ -29,7 +29,7 @@ def is_valid(x, y):
 def get_next(x, y, d):
     nx, ny = x + dxs[d], y + dys[d]
     if not is_valid(nx, ny):
-        d = d+2 if d < 2 else d-2
+        d = (d+2) if d < 2 else (d-2)
         nx, ny = x + dxs[d], y + dys[d]
     return nx, ny, d
 
@@ -46,6 +46,7 @@ def update(player):
         num_i, _, _, _, _, _ = players[i]
         if num_i == num:
             players[i] = player
+            break
 
 def move(player, pos):
     num, x, y, d, s, a = player
@@ -67,7 +68,7 @@ def loser_move(player):
         ndir = (d+i)%4
         nx, ny = x + dxs[ndir], y + dys[ndir]
         if is_valid(nx, ny) and find_player((nx, ny)) is None:
-            p = (num, x, y, d, s, 0)
+            p = (num, x, y, ndir, s, 0)
             move(p, (nx, ny))
             break
 
@@ -91,13 +92,12 @@ def simulate():
 
         nx, ny, ndir = get_next(x, y, d)
         next_player = find_player((nx, ny))
-        curr_player = (num, nx, ny, ndir, s, a)
-        update(curr_player)
+        players[i] = (num, nx, ny, ndir, s, a)
 
         if next_player is None:
-            move(curr_player, (nx, ny))
+            move(players[i], (nx, ny))
         else:
-            duel(curr_player, next_player, (nx, ny))
+            duel(players[i], next_player, (nx, ny))
 
 
 for _ in range(k):
