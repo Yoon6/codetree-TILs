@@ -54,6 +54,8 @@ def init():
     for i in range(n):
         for j in range(m):
             is_active[i][j] = False
+            visited[i][j] = False
+
 
 
 def awake():
